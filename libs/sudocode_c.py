@@ -75,6 +75,17 @@ def get_code(filename):
 		elif("print" in line_elem):		#print function implementation
 			line_of_code += "printf(\""
 			for i in range(1,len(line_elem)):	#getting each word to be printed
+				if (line_elem[i]=="intext"):
+					for j in range(i+1, len(line_elem)):
+						if(line_elem[j]=="valueof"):
+							i=j+1
+							break
+						if(j==len(line_elem)-1):	#check if last word of string is being printed
+							line_of_code += line_elem[j] + "\\n\""	#adding \n char for new line
+							i=j+1
+							break
+						line_of_code += line_elem[j] + " "	#spacing need for each word
+						i=j+1
 				if(line_elem[i] in variables):		#checking if print statement is referring to variables being printed
 					index_var = variables.index(line_elem[i])	#get index of that particular variable
 					line_of_code += "%"
