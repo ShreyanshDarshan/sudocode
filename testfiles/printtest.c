@@ -21,8 +21,9 @@ summ=a+b;
 test_2(2,3,4);
 for(int i=10; i >= 1; i-=2)
 {
-printf("%d\n",i);
+printf("%d i\n", i);
 }
-printf("%f\n",summ);
-printf("value of summ is %f\n",summ);
+printf("%f summ\n", summ);
+printf("value of summ is %f and b is %f hope you got it\n", summ, b);
+printf("hi bye hello buffalo\n");
 }

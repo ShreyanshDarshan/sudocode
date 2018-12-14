@@ -16,4 +16,5 @@ for int i=10 to 1 and gap=2
 print i
 endfor
 print summ
-print intext value of summ is valueof summ hope you got it
+print intext value of summ is valueof summ and intext b is valueof b hope you got it
+print intext hi valueof bye intext hello valueof buffalo

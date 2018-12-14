@@ -3,12 +3,14 @@
 def get_code(filename):
 	return_list = []		#stores the last defined function details to get return statement accordingly.
 	variables = []			#Stores the list of all variables
+	vars_to_print = []		#queue to store the variables to be printed in the print statement
 	funcs = []		#stores list of all functions and number of args to each func
 	func_args = 0		#variable to store number of args in ever function
 	file_ptr = open(filename, "r")
 	code_file_ptr = open(filename[0:len(filename)-4]+".c", "w")
 	code_file_ptr.write("#include <stdio.h>\n#include <stdlib.h>\n\n")
 	no = 0
+	onlyText = False
 	for line in file_ptr:		#going through every line
 		no+=1		#incrementing line count
 		line_elem = line.split(" ")	#tokenisation at space
@@ -75,31 +77,47 @@ def get_code(filename):
 		elif("print" in line_elem):		#print function implementation
 			line_of_code += "printf(\""
 			for i in range(1,len(line_elem)):	#getting each word to be printed
-				if (line_elem[i]=="intext"):
-					for j in range(i+1, len(line_elem)):
-						if(line_elem[j]=="valueof"):
-							i=j+1
+				if (line_elem[i]=="intext"):	#words between intext and valueof will be printed as plain text
+					onlyText = True 	#activating text only mode
+					if(i==len(line_elem)-1):	#check if last word of string is being read
+						line_elem.pop(i)	#preventing keyword from being printed
+						break
+					line_elem.pop(i)	#preventing keyword from being printed
+				if(line_elem[i] == "valueof"):
+					onlyText = False 	#deactivating text only mode
+					if(i==len(line_elem)-1):	#check if last word of string is being read
+						line_elem.pop(i)
+						break
+					line_elem.pop(i)
+				if (onlyText == False):
+					if(line_elem[i] in variables):		#checking if print statement is referring to variables being printed
+						index_var = variables.index(line_elem[i])	#get index of that particular variable
+						line_of_code += "%"
+						if(variables[index_var-1]=="int"):	#checking one index before the var name to check var type in order to get right format specifier
+							line_of_code += "d "
+						if(variables[index_var-1]=="float"):
+							line_of_code += "f "
+							print(i)
+						vars_to_print.append(line_elem[i])
+						if(i==len(line_elem)-1):	#check if last word of string is being printed
+							line_of_code += line_elem[i] + "\\n\""	#adding \n char for new line
 							break
-						if(j==len(line_elem)-1):	#check if last word of string is being printed
-							line_of_code += line_elem[j] + "\\n\""	#adding \n char for new line
-							i=j+1
+					else:
+						if(i==len(line_elem)-1):	#check if last word of string is being printed
+							line_of_code += line_elem[i] + "\\n\""	#adding \n char for new line
 							break
-						line_of_code += line_elem[j] + " "	#spacing need for each word
-						i=j+1
-				if(line_elem[i] in variables):		#checking if print statement is referring to variables being printed
-					index_var = variables.index(line_elem[i])	#get index of that particular variable
-					line_of_code += "%"
-					if(variables[index_var-1]=="int"):	#checking one index before the var name to check var type in order to get right format specifier
-						line_of_code += "d\\n\"," + variables[index_var]
-					if(variables[index_var-1]=="float"):
-						line_of_code += "f\\n\"," + variables[index_var]
-					break
+						line_of_code += line_elem[i] + " "	#spacing need for each word
 				else:
 					if(i==len(line_elem)-1):	#check if last word of string is being printed
 						line_of_code += line_elem[i] + "\\n\""	#adding \n char for new line
 						break
 					line_of_code += line_elem[i] + " "	#spacing need for each word
+			if (len(vars_to_print)):
+				for k in vars_to_print:
+					line_of_code += ", " + k
+				del vars_to_print[:]
 			line_of_code += ");"
+			onlyText = False;	#text only mode is inactive by default
 
 
 		elif("function" in line_elem):		#check for functions part
